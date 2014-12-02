@@ -14,7 +14,7 @@ module.exports = function (grunt) {
         // 'templates',
         'less:dev',
         // 'uglify:dev',
-        // 'browserify:dev',
+        'browserify:dev',
         'copy:dev',
         'notify:build'
     ]);
@@ -32,7 +32,7 @@ module.exports = function (grunt) {
         // 'templates',
         'less:production',
         // 'uglify:production',
-        // 'browserify:production',
+        'browserify:production',
         'copy:production'
     ]);
 

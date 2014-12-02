@@ -31,8 +31,7 @@ module.exports = function (grunt) {
             files: [{
                 expand: true,
                 cwd: 'src/static/',
-                // src: ['**/dev/**/*.js', '**/*.min.js', '**/*.map'],
-                src: ['**/*.js'],
+                src: ['**/*.min.js', '**/*.map'],
                 dest: 'web/static'
             }]
         },
