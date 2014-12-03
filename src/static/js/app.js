@@ -4,6 +4,7 @@ var auth = require('services/auth');
 var runManager = require('services/run-manager');
 var templates = require('templates');
 var GameModel = require('models/game-model');
+var Notifications = require('services/notifications-service');
 
 function App() {
     this.runManager = runManager;
@@ -22,6 +23,8 @@ App.prototype = {
                 var curUserId =  auth.userId();
                 _this.currentUser = _.findWhere(_this.runManager.game.users, { userId: curUserId });
                 _this.bindEvents();
+                _this.notifications = new Notifications({ gameId: _this.runManager.game.id });
+                _this.notifications.initialize();
                 _this.model = new GameModel({ run: _this.runManager.run, player: 'p' + _this.currentUser.role });
                 _this.model.loadData()
                     .then(_this.render);
