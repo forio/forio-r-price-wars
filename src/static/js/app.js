@@ -16,7 +16,7 @@ App.prototype = {
         if (!auth.isLoggedIn()) {
             window.location.href = 'login.html';
         } else {
-            _.bindAll(this, ['bindEvents', 'render', 'submitPrice', 'advanceRound', 'reset']);
+            _.bindAll(this, ['bindEvents', 'render', 'renderInputs', 'submitPrice', 'advanceRound', 'reset']);
             var _this = this;
             this.runManager.getRun().then(function () {
                 var curUserId =  auth.userId();
@@ -34,7 +34,7 @@ App.prototype = {
 
     bindEvents: function () {
         $('#logout').on('click', this.logout);
-        $('#submit').on('click', this.submitPrice);
+        $('body').on('click', '#submit', this.submitPrice);
         $('#advance').on('click', this.advanceRound);
         $('#reset').on('click', this.reset);
     },
@@ -47,8 +47,9 @@ App.prototype = {
 
     submitPrice: function (e) {
         var price = +$('#price').val();
-        this.model.setPrice(price);
-        // this.run.variables().save({ 'p1.current.prices': price });
+        this.model.setPrice(price)
+            .then(this.model.loadData)
+            .then(this.renderInputs);
     },
 
     advanceRound: function (e) {
@@ -68,6 +69,12 @@ App.prototype = {
         this.renderMarketShare();
         this.renderPrices();
         this.renderCharts();
+
+        this.renderInputs();
+    },
+
+    renderInputs: function () {
+        $('#inputs').html(templates['inputs']({ isPriceSubmitted: this.model.isPriceSubmitted() }));
     },
 
     renderUserName: function () {

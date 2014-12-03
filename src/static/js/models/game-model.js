@@ -23,7 +23,7 @@ GameModel.prototype = {
     setPrice: function (price) {
         var data = {};
         data[this.getVarName('current.prices', '.')] = price;
-        this.run.variables().save(data);
+        return this.run.variables().save(data);
     },
 
     advanceRound: function () {
@@ -32,6 +32,15 @@ GameModel.prototype = {
 
     reset: function () {
         return this.run.do('initialize');
+    },
+
+    isPriceSubmitted: function () {
+        var curPrices = this.getForCurPlayer('current_prices');
+        return _.isArray(curPrices);
+    },
+
+    isReadyToStep: function () {
+        return this.get('p1_current_prices')[0] && this.get('p2_current_prices')[0];
     },
 
     loadData: function () {
@@ -48,18 +57,26 @@ GameModel.prototype = {
             'p2.profit',
             'p1.overall.profit',
             'p2.overall.profit',
+            'p1.current.prices',
+            'p2.current.prices'
         ];
+
+        function convertDotsToUnderscores(variables) {
+            var hash = {};
+            for (var key in variables) {
+                if (variables.hasOwnProperty(key)) {
+                    hash[key.replace(/\./g, '_')] = variables[key];
+                }
+            }
+
+            return hash;
+        }
 
         var _this = this;
         return this.run.variables()
             .query(variables)
             .then(function (resp) {
-                _this._data = {};
-                for (var key in resp) {
-                    if (resp.hasOwnProperty(key)) {
-                        _this._data[key.replace(/\./g, '_')] = resp[key];
-                    }
-                }
+                _this._data = convertDotsToUnderscores(resp);
             });
     },
 
