@@ -12,7 +12,7 @@ App.prototype = {
         if (!auth.isLoggedIn()) {
             window.location.href = 'login.html';
         } else {
-            _.bindAll(this, ['assignUser']);
+            _.bindAll(this, ['assignUser', 'renderGames', 'deleteGame']);
             this.render();
             this.bindEvents();
         }
@@ -22,6 +22,7 @@ App.prototype = {
         $('#logout').on('click', this.logout);
         $('#create-game').on('click', this.createGame);
         $('#users').on('click', '.assign-user', this.assignUser);
+        $('#games').on('click', '.delete-game', this.deleteGame);
     },
 
     logout: function () {
@@ -35,7 +36,8 @@ App.prototype = {
         var game = {
             account: auth.account,
             project: auth.project,
-            group: auth.groupName()
+            group: auth.groupName(),
+            model: endpoints.model
         };
 
         return $.ajax({
@@ -43,7 +45,16 @@ App.prototype = {
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(game)
-        });
+        })
+        .then(this.renderGames);
+    },
+
+    deleteGame: function (e) {
+        var target = $(e.target);
+        var gameId = target.parents('tr').data('id');
+        var url = [endpoints.host, endpoints.game, gameId].join('/');
+
+        api.remove(url).then(this.renderGames);
     },
 
     assignUser: function (e) {
@@ -71,10 +82,11 @@ App.prototype = {
 
     renderGames: function () {
         var gamesTable = $('#games tbody');
-        var gameRowTemplate = _.template('<tr data-id="<%= id %>"><td><%= id.substr(0,5) %></td><td><%= player1 %></td><td><%= player2 %></td>');
+        var gameRowTemplate = _.template('<tr data-id="<%= id %>"><td><%= id.substr(-5,5) %></td><td><%= player1 %></td><td><%= player2 %></td><td><a href="javascript:void(0);" class="delete-game">X</a></td>');
 
         gamesTable.empty();
         runManager.getGames().then(function (games) {
+            games.sort(function (a, b) { return new Date(b.lastModified) - new Date(a.lastModified); });
             if (!games.length) {
                 gamesTable.append('<tr><td colspan="2">No games available</td></tr>');
             } else {
@@ -91,7 +103,7 @@ App.prototype = {
     },
 
     renderUsers: function () {
-        var userRowTemplate = _.template('<tr data-id="<%=userId%>"><td><%= userId.substr(0,5) %></td><td><select class="role"><option value="1">Player 1</option><option value="2">Player 2</option></select></td><td><a class="assign-user" href="#">></a></td>');
+        var userRowTemplate = _.template('<tr data-id="<%=userId%>"><td><%= userId.substr(0,5) %></td><td><select class="role"><option value="1">Player 1</option><option value="2">Player 2</option></select></td><td><a class="assign-user" href="javascript: void(0);">></a></td>');
         var usersTable = $('#users tbody');
         var url = endpoints.host + endpoints.member + '/' + auth.groupId();
 
