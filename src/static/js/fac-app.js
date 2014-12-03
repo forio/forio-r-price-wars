@@ -4,6 +4,7 @@ var auth = require('services/auth');
 var api = require('services/api-utils');
 var runManager = require('services/run-manager');
 var endpoints = require('services/endpoints');
+var templates = require('templates');
 
 function App() {}
 
@@ -12,7 +13,7 @@ App.prototype = {
         if (!auth.isLoggedIn()) {
             window.location.href = 'login.html';
         } else {
-            _.bindAll(this, ['assignUser', 'renderGames', 'deleteGame']);
+            _.bindAll(this, ['assignUser', 'renderGames', 'deleteGame', 'resetGame']);
             this.render();
             this.bindEvents();
         }
@@ -23,6 +24,7 @@ App.prototype = {
         $('#create-game').on('click', this.createGame);
         $('#users').on('click', '.assign-user', this.assignUser);
         $('#games').on('click', '.delete-game', this.deleteGame);
+        $('#games').on('click', '.reset-game', this.resetGame);
     },
 
     logout: function () {
@@ -57,6 +59,19 @@ App.prototype = {
         api.remove(url).then(this.renderGames);
     },
 
+    resetGame: function (e) {
+        var target = $(e.target);
+        var gameId = target.parents('tr').data('id');
+        var url = [endpoints.game, gameId, 'run'].join('/');
+
+        api.post(url, null, { apiRoot: endpoints.host })
+            .then(function (runId) {
+                return api.post([runId, 'operations', 'initialize'].join('/'));
+            })
+            .then(_.partial(this.alert, 'The game was re-initialized'))
+            .then(this.renderGames);
+    },
+
     assignUser: function (e) {
         var target = $(e.target);
         var userId = target.parents('tr').data('id');
@@ -82,7 +97,7 @@ App.prototype = {
 
     renderGames: function () {
         var gamesTable = $('#games tbody');
-        var gameRowTemplate = _.template('<tr data-id="<%= id %>"><td><%= id.substr(-5,5) %></td><td><%= player1 %></td><td><%= player2 %></td><td><a href="javascript:void(0);" class="delete-game">X</a></td>');
+        var gameRowTemplate = templates['facilitator/game-row'];
 
         gamesTable.empty();
         runManager.getGames().then(function (games) {
@@ -117,6 +132,10 @@ App.prototype = {
                     usersTable.append(userRowTemplate(user));
                 });
         });
+    },
+
+    alert: function (msg) {
+        alert(msg);
     }
 };
 
