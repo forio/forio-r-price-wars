@@ -11,7 +11,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('dev_tasks', [
         'clean',
-        // 'templates',
+        'templates',
         'less:dev',
         // 'uglify:dev',
         'browserify:dev',
@@ -29,7 +29,7 @@ module.exports = function (grunt) {
 
     grunt.registerTask('production_tasks', [
         'clean',
-        // 'templates',
+        'templates',
         'less:production',
         // 'uglify:production',
         'browserify:production',

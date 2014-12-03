@@ -21,7 +21,7 @@ module.exports = function (grunt) {
         // './src/static/js/models/base-model.js:base-model',
         // './src/static/js/collections/base-collection.js:base-collection',
         // './src/static/js/routers/base-router.js:base-router',
-        // './src/static/js/templates.js:templates'
+        './src/static/js/templates.js:templates'
     ];
 
     var aliasMappings = [{
