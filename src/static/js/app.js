@@ -16,7 +16,7 @@ if (!auth.isLoggedIn()) {
 
 function bindEvents() {
     $('#logout').on('click', function () {
-        auth.logout(function () {
+        auth.logout().then(function () {
             window.location = 'login.html';
         });
     });

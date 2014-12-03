@@ -117,6 +117,8 @@ module.exports = {
         if (callback) {
             callback();
         }
+
+        return $.Deferred().resolve().promise();
     },
 
     _getTokenField: function (field) {
