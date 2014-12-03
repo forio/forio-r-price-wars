@@ -1,6 +1,6 @@
 var parts = window.location.pathname.split('/');
 
-var curAccount = 'jaimedp';
+var curAccount = 'forio-dev';
 var curProject = 'rdemo';
 var model = 'marketshare.R';
 var proto = /http(s)?/.test(window.location.protocol) ? window.location.protocol : 'https:';

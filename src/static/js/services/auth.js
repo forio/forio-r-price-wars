@@ -8,7 +8,7 @@ var isFacilitator = function (resp, userId) {
 
     if (resp && resp.length) {
         var project = _.find(resp, function (project) {
-            return project.project === endpoints.curProject && project.account === endpoints.curAccount;
+            return project.project === endpoints.project && project.account === endpoints.account;
         });
 
         if (project) {
@@ -30,8 +30,9 @@ module.exports = {
         options = options || {};
 
         var success = options.success;
+        delete options.success;
 
-        options.success = function (data) {
+        var onSuccess = function (data) {
             var jwt = JSON.parse(new Buffer(data['access_token'].split('.')[1], 'base64').toString('ascii'));
 
             var userId = jwt['user_id'];
@@ -39,7 +40,8 @@ module.exports = {
             // end users always have a slash in the name
             var isFacUserName = !/\//.test(userName);
 
-            var query = 'account=' + endpoints.curAccount + '&project=' + endpoints.curProject + '&userId=' + userId;
+            var query = 'account=' + endpoints.account + '&project=' + endpoints.project + '&userId=' + userId;
+            var dtd = $.Deferred();
 
             net.get('member/local', query, {
                 apiRoot: endpoints.host,
@@ -50,8 +52,8 @@ module.exports = {
                     var group = resp[0];
                     var cookieObj = {
                         'access_token': data['access_token'],
-                        'account': endpoints.curAccount,
-                        'project': endpoints.curProject,
+                        'account': endpoints.account,
+                        'project': endpoints.project,
                         'groupId': group.groupId,
                         'groupName': group.name,
                         'isFac': isFac
@@ -63,31 +65,39 @@ module.exports = {
                         headers: { 'Authorization': 'Bearer ' + data['access_token'] }
                     });
 
+                    var userObject = {
+                        userName: userName,
+                        userId: userId,
+                        isFacilitator: isFac,
+                        groupId: group.groupId,
+                        groupName: group.name,
+                        account: group.account,
+                        project: group.project
+                    };
+
                     if (success) {
-                        success.call(this, {
-                            userName: userName,
-                            userId: userId,
-                            isFacilitator: isFac,
-                            groupId: group.groupId,
-                            groupName: group.name,
-                            account: group.account,
-                            project: group.project
-                        });
+                        success.call(this, userObject);
                     }
 
+                    dtd.resolve(userObject);
+                },
+                error: function (a, b, c) {
+                    dtd.rejectWith(null, a, b, c);
                 }
             });
 
+            return dtd.promise();
         };
 
         options.apiRoot = endpoints.host;
 
-        return net.post(endpoints.login, { userName: user, account: this.account, password: password }, options);
+        return net.post(endpoints.login, { userName: user, account: this.account, password: password }, options)
+            .then(onSuccess);
     },
 
-    account: endpoints.curAccount,
+    account: endpoints.account,
 
-    project: endpoints.curProject,
+    project: endpoints.project,
 
     isLoggedIn: function () {
         var cookie = net.getCookie(endpoints.sessionCookieName);
