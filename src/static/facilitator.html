@@ -23,15 +23,38 @@
                       <a href="javascript:void(0);" id="logout">Logout</a>
                   </div>
                   <h1>Multiplayer Price War Simulation<small>R Model</small></h1>
-
             </div>
         </header>
 
         <div class="container">
             <div class="row">
-                <div class="col-xs-12">
-        <p>hello world</p>
-
+                <div class="col-xs-8 col-xs-offset-4">
+                    <button id="create-game" class="btn btn-primary">Create Game</button>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    <table id="users" class="table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="col-xs-8">
+                    <table id="games" class="table">
+                        <thead>
+                            <tr>
+                                <th>Game</th>
+                                <th>Player 1</th>
+                                <th>Player 2</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
             </div>
         </div>

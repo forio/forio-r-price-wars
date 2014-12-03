@@ -5,18 +5,26 @@ var auth = require('services/auth');
 var endpoints = require('services/endpoints');
 
 module.exports = {
-    getRun: function () {
+    getGames: function (userId) {
         ///multiplayer/game?account={team id}&project={project id}&group={group name}&userId={user id}
         var query = [
             'account=' + auth.account,
             'project=' + auth.project,
-            'group=' + auth.groupName(),
-            'userId=' + auth.userId()
-        ].join('&');
+            'group=' + auth.groupName()
+        ];
 
+        if (userId) {
+            query.push(userId);
+        }
+
+        return api.get('multiplayer/game', query.join('&'), { apiRoot: endpoints.host  });
+    },
+
+    getRun: function () {
         // callback hell!
         var _this = this;
-        var getGameProm = api.get('multiplayer/game', query, { apiRoot: endpoints.host  })
+
+        return this.getGames(auth.userId())
             .then(function (resp) {
                 if (!resp.length) {
                     var t = $.Deferred().reject(null, 'error', 'You haven\'t been assigned to a game yet. Ask the facilitator to assign you to a game');
@@ -49,7 +57,5 @@ module.exports = {
             .fail(function (xhr, error, msg) {
                 console.log('error ' + msg);
             });
-
-        return getGameProm;
     }
 };
