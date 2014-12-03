@@ -17,12 +17,12 @@ module.exports = function (grunt) {
             tasks: ['dev_tasks']
         },
 
-        // templates: {
-        //     files: [
-        //         'src/static/templates/**/*.html'
-        //     ],
-        //     tasks: ['template-module:compile', 'browserify:dev_templates', 'notify:build']
-        // },
+        templates: {
+            files: [
+                'src/static/templates/**/*.html'
+            ],
+            tasks: ['template-module:compile', 'browserify:dev_templates', 'notify:build']
+        },
 
         copy_model: {
             files: [
