@@ -4,7 +4,7 @@ module.exports = function (grunt) {
     var fileMap = {
         'web/static/css/site.css': 'src/static/css/site.less',
         'web/static/css/facilitator.css': 'src/static/css/facilitator.less',
-        // 'web/static/css/login.css': 'src/static/css/login.less'
+        'web/static/css/login.css': 'src/static/css/login.less'
     };
 
     grunt.config.set('less', {

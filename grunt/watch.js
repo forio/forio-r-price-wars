@@ -26,7 +26,7 @@ module.exports = function (grunt) {
 
         copy_model: {
             files: [
-                'src/model/dist/*.py'
+                'src/model/dist/*'
             ],
             tasks: ['copy:model', 'notify:build']
         },
@@ -72,13 +72,13 @@ module.exports = function (grunt) {
         //     tasks: ['uglify:dev']
         // },
 
-        // browserify: {
-        //     files: [
-        //         'src/static/js/**/*.js',
-        //         '!src/static/js/templates.js',
-        //         '!src/static/js/vendor/**/*.js'
-        //     ],
-        //     tasks: ['browserify:dev', 'notify:build']
-        // }
+        browserify: {
+            files: [
+                'src/static/js/**/*.js',
+                '!src/static/js/templates.js',
+                '!src/static/js/vendor/**/*.js'
+            ],
+            tasks: ['browserify:dev', 'notify:build']
+        }
     });
 };
