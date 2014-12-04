@@ -9,8 +9,10 @@ function GameModel(options) {
     options = options || {};
     this.run = options.run;
     this.player = options.player || 'p1';
-
-    _.bindAll(this, ['setPrice', 'loadData', 'advanceRound', 'reset']);
+    $.ajaxSetup({
+        cache: false
+    });
+    _.bindAll(this, ['setPrice', 'loadData', 'advanceRound', 'reset', 'advanceIfReady']);
 }
 
 GameModel.prototype = {
@@ -29,6 +31,15 @@ GameModel.prototype = {
     advanceRound: function () {
         return this.run.do('advanceRound');
     },
+
+    advanceIfReady: function () {
+        if (this.isReadyToStep()) {
+            return this.advanceRound().then(this.loadData);
+        }
+
+        return $.Deferred().resolve().promise();
+    },
+
 
     reset: function () {
         return this.run.do('initialize');
@@ -73,6 +84,7 @@ GameModel.prototype = {
         }
 
         var _this = this;
+
         return this.run.variables()
             .query(variables)
             .then(function (resp) {

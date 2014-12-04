@@ -45,13 +45,15 @@ function clearCookie(name, domain, path) {
     $.removeCookie(name, { domain: domain, path: path || PATH_FOR_COOKIES });
 }
 
-function prepareHeaders() {
+function prepareHeaders(extraHeaders) {
     var cookie = getCookie('sim-session');
+    extraHeaders = extraHeaders || {};
 
-    var headers = {
+    var headers = _.extend({
         'Accept': 'application/json',
-        'Content-Type': 'application/json'
-    };
+        'Content-Type': 'application/json',
+        // 'Cache-Control':'no-cache'
+    }, extraHeaders);
 
     if (cookie && cookie['access_token']) {
         _.extend(headers, {
@@ -62,6 +64,11 @@ function prepareHeaders() {
     return headers;
 }
 
+function cacheBust(url) {
+    var v = Math.floor(Math.random() * 10000 + 10000);
+    return /\?/.test(url) ? url + '&v=' + v : url + '?v=' + v;
+}
+
 module.exports = {
 
     prepareHeaders: function () {
@@ -69,7 +76,7 @@ module.exports = {
 
         var headers = {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         };
 
         if (cookie['access_token']) {
@@ -88,7 +95,8 @@ module.exports = {
         return $.ajax({
             type: 'GET',
             headers: headers,
-            url: opt.apiRoot + '/' + endpoint + '?' + query,
+            cache: false,
+            url: cacheBust(opt.apiRoot + '/' + endpoint + '?' + query),
             success: opt.success || _.noop,
             error: wrapError(opt.error),
             complete: opt.complete || _.noop
@@ -134,7 +142,7 @@ module.exports = {
         return $.ajax({
             type: 'HEAD',
             headers: headers,
-            url: opt.apiRoot + '/' + endpoint,
+            url: cacheBust(opt.apiRoot + '/' + endpoint),
             success: opt.success || _.noop,
             error: wrapError(opt.error),
             complete: opt.complete || _.noop

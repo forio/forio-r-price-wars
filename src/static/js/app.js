@@ -52,7 +52,8 @@ App.prototype = {
         var price = +$('#price').val();
         this.model.setPrice(price)
             .then(this.model.loadData)
-            .then(this.renderInputs);
+            .then(this.model.advanceIfReady)
+            .then(this.render);
     },
 
     advanceRound: function (e) {
