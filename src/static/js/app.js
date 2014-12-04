@@ -66,7 +66,7 @@ App.prototype = {
     submitPrice: function (e) {
         e.preventDefault();
         var target = $('#price');
-        var price = +$('#price').val();
+        var price = +($('#price').val().replace(/[,$]/g, ''));
 
         target.parents('form').removeClass('has-error');
         $('#error-message').empty();
