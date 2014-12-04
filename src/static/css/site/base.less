@@ -1,4 +1,6 @@
-
+.container {
+    min-width: 768px !important;
+}
 
 .price {
     .waiting-message {
@@ -57,4 +59,25 @@
         color: #555;
         font-weight: normal;
     }
+
+    .axis text,
+    .contour-legend {
+        font-size: 90%;
+        font-family: 'Open Sans'
+    }
+
+    .contour-legend {
+        border: none;
+        z-index: 1;
+        pointer-events: none;
+        padding: 0;
+        margin-top: 3px;
+    }
+
+    .nw-tooltip {
+        z-index: 2;
+    }
+
+
+
 }

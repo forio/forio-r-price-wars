@@ -133,9 +133,9 @@ App.prototype = {
     },
 
     renderProductData: function (table, productIndex, field, formatter, cellClass) {
-        formatter = formatter || d3.format('$.2f');
-        this.renderDataRow(table, 'Player 1', this.model.get('p1_' + field)[productIndex].map(formatter), cellClass);
-        this.renderDataRow(table, 'Player 2', this.model.get('p2_' + field)[productIndex].map(formatter), cellClass);
+        formatter = formatter || d3.format('$,.0f');
+        this.renderDataRow(table, '1', this.model.get('p1_' + field)[productIndex].map(formatter), cellClass);
+        this.renderDataRow(table, '2', this.model.get('p2_' + field)[productIndex].map(formatter), cellClass);
     },
 
     renderProductSeparator: function (table, product) {
@@ -145,7 +145,7 @@ App.prototype = {
     renderDataRow: function (table, player, data, cellClass) {
         var tr = $('<tr>');
         var curRound = this.model.get('current_round')[0];
-        tr.append($('<td>').text(player));
+        tr.append($('<td>').addClass('center').text(player));
 
         for (var j = 0; j<curRound - 1; j++) {
             var cell = $('<td>').text(data[j]);
@@ -164,7 +164,7 @@ App.prototype = {
         this.profitChart = this.profitChart || new Contour({
             el: '.profit-chart',
             chart: {
-                animations: false,
+                // animations: false,
 
                 padding: {
                     left: 45
@@ -195,6 +195,12 @@ App.prototype = {
                 formatter: function (d) {
                     return '<h5>' + moneyFormatter(d.y) + '</h5>Cumulative Profit ' + d.series + ' - ' + categories[d.x];
                 }
+            },
+
+            legend: {
+                vAlign: 'top',
+                hAlign: 'right',
+                direction: 'horizontal'
             }
         })
         .cartesian()
@@ -226,18 +232,20 @@ App.prototype = {
             el: '.correlation-chart',
             chart: {
                 padding: {
-                    left: 45
+                    // left: 45
                 }
             },
 
-            yAxis: {
+            xAxis: {
                 title: 'Price',
+                ticks: 5,
+                // min: 0,
                 labels: {
                     format: '$.2s'
                 }
             },
 
-            xAxis: {
+            yAxis: {
                 min: 0,
                 max: 1,
                 labels: {
@@ -254,7 +262,7 @@ App.prototype = {
 
             tooltip: {
                 formatter: function (d) {
-                    return '<h5>' + perFormatter(d.x) + ' market share at ' + moneyFormatter(d.y) + '</h5>';
+                    return '<h5>' + perFormatter(d.y) + ' market share at ' + moneyFormatter(d.x) + '</h5>';
                 }
             }
 
@@ -269,8 +277,8 @@ App.prototype = {
             var prices = _this.model.getForCurPlayer('prices')[0];
             var data = this.model.getForCurPlayer('share')[prodId].slice(0, curRound - 1).map(function (share, round) {
                 return {
-                    x: share,
-                    y: prices[round]
+                    x: prices[round],
+                    y: share
                 };
             });
             var series = [{
