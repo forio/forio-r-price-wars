@@ -1,9 +1,13 @@
 <div class="price <%= isPriceSubmitted ? 'price-submitted' : '' %>">
-    <div class="div price-form">
+    <form class="form-inline div price-form">
         <label for="price">Price</label>
-        <input id="price" type="text">
+        <div class="input-group">
+            <span class="input-group-addon">$</span>
+            <input type="text" id="price" class="form-control">
+            <span class="input-group-addon">.00</span>
+        </div>
         <button id="submit" class="btn btn-primary">Submit</button>
-    </div>
+    </form>
     <div class="waiting-message">
         Your price has been submitted, waiting for the other player to submit his price.
     </div>

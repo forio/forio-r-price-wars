@@ -6,6 +6,10 @@ var templates = require('templates');
 var GameModel = require('models/game-model');
 var Notifications = require('services/notifications-service');
 
+var moneyFormatter = d3.format('$,.0f');
+var perFormatter = d3.format('%');
+
+
 function App() {
     this.runManager = runManager;
 }
@@ -106,37 +110,37 @@ App.prototype = {
     renderPrices: function () {
         $('.prices').html(this.template({ caption: 'Prices' }));
         var table = $('.prices tbody');
-        this.renderProductData(table, 0, 'prices');
-        // this.renderProductData(table, 1, 'share');
-        // this.renderProductData(table, 2, 'share');
+        this.renderProductData(table, 0, 'prices', null, 'number');
     },
 
     renderMarketShare: function () {
         $('.market-share').html(this.template({ caption: 'Market Share' }));
         var table = $('.market-share tbody');
-        this.renderProductData(table, 0, 'share', d3.format('%'));
-        // this.renderProductData(table, 1, 'share');
-        // this.renderProductData(table, 2, 'share');
+        this.renderProductData(table, 0, 'share', d3.format('%'), 'percentage');
     },
 
-    renderProductData: function (table, productIndex, field, formatter) {
+    renderProductData: function (table, productIndex, field, formatter, cellClass) {
         formatter = formatter || d3.format('$.2f');
-        // this.renderProductSeparator(table, 'Product ' + (productIndex + 1));
-        this.renderDataRow(table, 'Player 1', this.model.get('p1_' + field)[productIndex].map(formatter));
-        this.renderDataRow(table, 'Player 2', this.model.get('p2_' + field)[productIndex].map(formatter));
+        this.renderDataRow(table, 'Player 1', this.model.get('p1_' + field)[productIndex].map(formatter), cellClass);
+        this.renderDataRow(table, 'Player 2', this.model.get('p2_' + field)[productIndex].map(formatter), cellClass);
     },
 
     renderProductSeparator: function (table, product) {
         $('<tr>').append($('<th>').text(product)).appendTo(table);
     },
 
-    renderDataRow: function (table, player, data) {
+    renderDataRow: function (table, player, data, cellClass) {
         var tr = $('<tr>');
         var curRound = this.model.get('current_round')[0];
         tr.append($('<td>').text(player));
 
         for (var j = 0; j<curRound - 1; j++) {
-            tr.append($('<td>').text(data[j]));
+            var cell = $('<td>').text(data[j]);
+            if (cellClass) {
+                cell.addClass(cellClass);
+            }
+
+            tr.append(cell);
         }
 
         table.append(tr);
@@ -147,10 +151,13 @@ App.prototype = {
         this.profitChart = this.profitChart || new Contour({
             el: '.profit-chart',
             chart: {
+                animations: false,
+
                 padding: {
                     left: 45
                 }
             },
+
             xAxis: {
                 title: 'Year',
                 min: 0,
@@ -169,23 +176,33 @@ App.prototype = {
                         return v < 100 && v > 100 ? d3.format('d')(v) : d3.format('$.2s')(v);
                     }
                 }
+            },
+
+            tooltip: {
+                formatter: function (d) {
+                    return '<h5>' + moneyFormatter(d.y) + '</h5>Cumulative Profit ' + d.series + ' - ' + categories[d.x];
+                }
             }
         })
         .cartesian()
         .line()
+        .legend()
         .tooltip();
 
         var curRound = this.model.get('current_round')[0];
+        var cleanSeries = function (v, i) { return i < curRound - 1 ? v : null; };
         if (curRound > 1) {
-            var data =  this.model.getForCurPlayer('profit')[0].map(function (v, i) { return i < curRound - 1 ? v : null; });
             var series = [{
-                name: 'Overall Profit',
-                data: data
+                name: 'Player 1',
+                data: this.model.get('p1_cumulative_profit')[0].map(cleanSeries)
+            }, {
+                name: 'Player 2',
+                data: this.model.get('p2_cumulative_profit')[0].map(cleanSeries)
             }];
 
             this.profitChart.setData(series).render();
         } else {
-            this.profitChart.setData([]).render();
+            this.profitChart.setData([{ name: 'Player 1', data: [] }, { name: 'Player 2', data: [] }]).render();
         }
     },
 
@@ -211,10 +228,23 @@ App.prototype = {
                 min: 0,
                 max: 1,
                 labels: {
-                    format: '%'
+                    formatter: function (d) {
+                        if (d * 10 % 2 === 0) {
+                            return perFormatter(d);
+                        }
+
+                        return null;
+                    }
                 },
                 title: 'Market Share (%)'
+            },
+
+            tooltip: {
+                formatter: function (d) {
+                    return '<h5>' + perFormatter(d.x) + ' market share at ' + moneyFormatter(d.y) + '</h5>';
             }
+            }
+
         })
         .cartesian()
         .scatter()
