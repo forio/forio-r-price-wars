@@ -64,22 +64,35 @@ App.prototype = {
     },
 
     submitPrice: function (e) {
+        e.preventDefault();
+        var target = $('#price');
         var price = +$('#price').val();
+
+        target.parents('form').removeClass('has-error');
+        $('#error-message').empty();
+
+        if (_.isNaN(price)) {
+            target.parents('form').addClass('has-error');
+            $('#error-message').text('Price must be a number');
+
+            return;
+        }
+
+        $(e.target)
+            .addClass('disabled');
+
         this.model.setPrice(price)
-            .then(this.model.loadData)
             .then(this.model.advanceIfReady)
             .then(this.render);
     },
 
     advanceRound: function (e) {
         this.model.advanceRound()
-            .then(this.model.loadData)
             .then(this.render);
     },
 
     reset: function () {
         this.model.reset()
-            .then(this.model.loadData)
             .then(this.render);
     },
 
@@ -242,7 +255,7 @@ App.prototype = {
             tooltip: {
                 formatter: function (d) {
                     return '<h5>' + perFormatter(d.x) + ' market share at ' + moneyFormatter(d.y) + '</h5>';
-            }
+                }
             }
 
         })

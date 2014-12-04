@@ -25,11 +25,13 @@ GameModel.prototype = {
     setPrice: function (price) {
         var data = {};
         data[this.getVarName('current.prices', '.')] = price;
-        return this.run.variables().save(data);
+        return this.run.variables().save(data)
+            .then(this.loadData);
     },
 
     advanceRound: function () {
-        return this.run.do('advanceRound');
+        return this.run.do('advanceRound')
+            .then(this.loadData);
     },
 
     advanceIfReady: function () {
@@ -42,7 +44,8 @@ GameModel.prototype = {
 
 
     reset: function () {
-        return this.run.do('initialize');
+        return this.run.do('initialize')
+            .then(this.loadData);
     },
 
     isPriceSubmitted: function () {
@@ -69,7 +72,9 @@ GameModel.prototype = {
             'p1.overall.profit',
             'p2.overall.profit',
             'p1.current.prices',
-            'p2.current.prices'
+            'p2.current.prices',
+            'p1.cumulative.profit',
+            'p2.cumulative.profit'
         ];
 
         function convertDotsToUnderscores(variables) {

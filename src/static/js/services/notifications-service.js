@@ -24,7 +24,9 @@ Notifications.prototype = {
     },
 
     onNotify: function (msg) {
-        this.notifyAll(msg.data.type, msg.data.subType, msg);
+        if (msg.user.id !== auth.userId()) {
+            this.notifyAll(msg.data.type, msg.data.subType, msg);
+        }
     },
 
     notifyAll: function (type, subType, msg) {
@@ -34,6 +36,7 @@ Notifications.prototype = {
     },
 
     subscribe: function (type, subType, callback, ctx) {
+        subType = subType || 'all';
         this.events[type] = this.events[type] || {};
         this.events[type][subType] = this.events[type][subType] || [];
         this.events[type][subType].push({ callback: callback, context: ctx });
