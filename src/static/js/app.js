@@ -210,6 +210,12 @@ App.prototype = {
                 }
             },
 
+            line: {
+                marker: {
+                    size: 5
+                }
+            },
+
             tooltip: {
                 formatter: function (d) {
                     return '<h5>' + moneyFormatter(d.y) + '</h5>Cumulative Profit ' + d.series + ' - ' + categories[d.x];
