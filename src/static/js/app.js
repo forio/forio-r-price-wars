@@ -17,14 +17,14 @@ App.prototype = {
         if (!auth.isLoggedIn()) {
             window.location.href = 'login.html';
         } else {
-            _.bindAll(this, ['bindEvents', 'render', 'renderInputs', 'submitPrice', 'advanceRound', 'reset']);
+            _.bindAll(this, ['bindEvents', 'bindNotifications', 'render', 'renderInputs', 'submitPrice', 'advanceRound', 'reset']);
             var _this = this;
             this.runManager.getRun().then(function () {
                 var curUserId =  auth.userId();
                 _this.currentUser = _.findWhere(_this.runManager.game.users, { userId: curUserId });
                 _this.bindEvents();
-                _this.notifications = new Notifications({ gameId: _this.runManager.game.id });
-                _this.notifications.initialize();
+
+                _this.bindNotifications();
                 _this.model = new GameModel({ run: _this.runManager.run, player: 'p' + _this.currentUser.role });
                 _this.model.loadData()
                     .then(_this.render);
@@ -33,6 +33,17 @@ App.prototype = {
         }
 
         return this;
+    },
+
+    bindNotifications: function () {
+        this.notifications = new Notifications({ gameId: this.runManager.game.id });
+        this.notifications.initialize();
+
+        this.notifications.subscribe('run', 'operation', function () {
+            this.model
+                .loadData()
+                .then(this.render);
+        }.bind(this));
     },
 
     bindEvents: function () {

@@ -20,13 +20,24 @@ Notifications.prototype = {
     initialize: function () {
         this.cometd.init(this.options.baseUrl);
         this.cometd.subscribe(this.options.channel, this.onNotify.bind(this));
+        this.events = {};
     },
 
     onNotify: function (msg) {
+        this.notifyAll(msg.data.type, msg.data.subType, msg);
+    },
 
+    notifyAll: function (type, subType, msg) {
+        var events = ((this.events[type] || {})[subType] || []);
+
+        _.invoke(events, 'callback');
+    },
+
+    subscribe: function (type, subType, callback, ctx) {
+        this.events[type] = this.events[type] || {};
+        this.events[type][subType] = this.events[type][subType] || [];
+        this.events[type][subType].push({ callback: callback, context: ctx });
     }
-
-
 };
 
 module.exports = Notifications;
