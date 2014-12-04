@@ -111,6 +111,7 @@ App.prototype = {
     },
 
     render: function () {
+        this.updateState();
         this.renderUserName();
         this.renderMarketShare();
         this.renderPrices();
@@ -118,6 +119,16 @@ App.prototype = {
 
         this.renderInputs();
         this.renderChat();
+    },
+
+    updateState: function () {
+        if (this.model.get('current_round')[0] <= this.model.get('total_rounds')[0]) {
+            $('#advance, #inputs').show();
+            $('#end-of-game').hide();
+        } else {
+            $('#advance, #inputs').hide();
+            $('#end-of-game').show();
+        }
     },
 
     renderInputs: function () {
