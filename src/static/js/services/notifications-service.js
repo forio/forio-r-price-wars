@@ -23,16 +23,27 @@ Notifications.prototype = {
         this.events = {};
     },
 
+    sendChat: function (from, text) {
+        var msg = {
+            time: new Date(),
+            type: 'chat',
+            from: from,
+            message: text
+        };
+
+        this.cometd.publish(this.options.channel, msg);
+    },
+
     onNotify: function (msg) {
-        if (msg.user.id !== auth.userId()) {
+        if (!msg.user || msg.user.id !== auth.userId()) {
             this.notifyAll(msg.data.type, msg.data.subType, msg);
         }
     },
 
     notifyAll: function (type, subType, msg) {
-        var events = ((this.events[type] || {})[subType] || []);
+        var events = ((this.events[type] || {})[subType || 'all'] || []);
 
-        _.invoke(events, 'callback');
+        _.invoke(events, 'callback', msg);
     },
 
     subscribe: function (type, subType, callback, ctx) {

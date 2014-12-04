@@ -21,7 +21,7 @@ App.prototype = {
         if (!auth.isLoggedIn()) {
             window.location.href = 'login.html';
         } else {
-            _.bindAll(this, ['bindEvents', 'bindNotifications', 'render', 'renderInputs', 'submitPrice', 'advanceRound', 'reset']);
+            _.bindAll(this, ['bindEvents', 'bindNotifications', 'render', 'renderInputs', 'submitPrice', 'advanceRound', 'reset', 'sendChat']);
             var _this = this;
             this.runManager.getRun().then(function () {
                 var curUserId =  auth.userId();
@@ -48,11 +48,17 @@ App.prototype = {
                 .loadData()
                 .then(this.render);
         }.bind(this));
+
+        this.notifications.subscribe('chat', null, function (msg) {
+            var template = _.template('<div class="message"><span class="from"><%= from %> @ <%= new Date(time).toLocaleTimeString() %></span><span class="message-text"><%= message %></span></div>');
+            $('.chat .messages').prepend(template(msg.data));
+        });
     },
 
     bindEvents: function () {
         $('#logout').on('click', this.logout);
         $('body').on('click', '#submit', this.submitPrice);
+        $('body').on('click', '#send-chat', this.sendChat);
         $('#advance').on('click', this.advanceRound);
         $('#reset').on('click', this.reset);
     },
@@ -96,6 +102,14 @@ App.prototype = {
             .then(this.render);
     },
 
+    sendChat: function (e) {
+        e.preventDefault();
+        var text = $('#chat-message').val();
+        this.notifications.sendChat(this.currentUser.lastName, text);
+        $('#chat-message').val('');
+
+    },
+
     render: function () {
         this.renderUserName();
         this.renderMarketShare();
@@ -103,10 +117,15 @@ App.prototype = {
         this.renderCharts();
 
         this.renderInputs();
+        this.renderChat();
     },
 
     renderInputs: function () {
         $('#inputs').html(templates['inputs']({ isPriceSubmitted: this.model.isPriceSubmitted() }));
+    },
+
+    renderChat: function () {
+        $('.chat-container').html(templates['chat']());
     },
 
     renderUserName: function () {

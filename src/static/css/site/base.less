@@ -77,7 +77,38 @@
     .nw-tooltip {
         z-index: 2;
     }
+}
 
+.chat {
+    margin-top: 32px;
 
+    .messages {
+        max-height: 311px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
 
+    .message {
+        margin: 5px 0;
+        border-bottom: 1px solid #EEE;
+        padding: 5px 0;
+
+        .from {
+            color: #999;
+            font-size: 80%;
+            display: block;
+            margin: 0;
+            line-height: .8em;
+        }
+
+        .message-text {
+            color: #444;
+        }
+
+    }
+
+}
+
+#chat-message {
+    width: 69%;
 }
