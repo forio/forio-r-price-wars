@@ -313,7 +313,8 @@ App.prototype = {
 
     renderCorrelationChart: function () {
         var prodId = 0;
-        var scale = d3.scale.pow().range([3, 15]);
+        var scale = d3.scale.sqrt().range([3, 15]);
+        var _this = this;
 
         this.correlationChart = this.correlationChart || new Contour({
             el: '.correlation-chart',
@@ -357,6 +358,7 @@ App.prototype = {
 
             scatter: {
                 radius: function (d, i) {
+                    var revenue = _this.model.getForCurPlayer('revenue')[0];
                     scale.domain(d3.extent(revenue));
                     return scale(revenue[i]);
                 }
@@ -367,16 +369,14 @@ App.prototype = {
         .scatter()
         .tooltip();
 
-        var _this = this;
         var curRound = this.model.get('current_round')[0];
-        var revenue = this.model.getForCurPlayer('revenue')[0];
         if (curRound > 1) {
             var prices = _this.model.getForCurPlayer('profit')[0];
             var data = this.model.getForCurPlayer('share')[prodId].slice(0, curRound - 1).map(function (share, round) {
                 return {
                     y: prices[round],
                     x: share,
-                    rev: revenue[round]
+                    rev: _this.model.getForCurPlayer('revenue')[0][round]
                 };
             });
             var series = [{
@@ -394,7 +394,7 @@ App.prototype = {
             el: '.market-share-chart',
             chart: {
                 animations: {
-                    duration: duration
+                    duration: duration / 3
                 }
             },
             tooltip: {
@@ -404,6 +404,7 @@ App.prototype = {
             }
         })
         .pie()
+        .pieLegend()
         .tooltip();
 
         var curRound = this.model.get('current_round')[0] - 1;

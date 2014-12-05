@@ -33,7 +33,7 @@
         <div id="main-content" class="container" style="display: none;">
             <div class="row">
                 <div class="col-xs-12">
-                    <button id="advance" style="display:none;" class="btn btn-success pull-right">Advance</button>
+                    <button id="advance" style="display:none;" class="btn btn-default btn-sm pull-right">Advance</button>
                     <button id="reset" class="btn btn-link pull-right">Reset</button>
                     <div id="inputs"></div>
                     <div style="display: none;" id="end-of-game">The game has eneded.</div>
@@ -47,9 +47,10 @@
                     </div>
                     <div class="row charts">
                         <div class="col-xs-6">
-                            <h5>Profit vs. Market Share vs. Revenue</h5>
-                            <div class="correlation-chart"></div>
+                            <h5>Market Share</h5>
+                            <div class="market-share-chart"></div>
                         </div>
+
                         <div class="col-xs-6">
                             <h5>Cumulative Profit</h5>
                             <div class="profit-chart"></div>
@@ -57,8 +58,8 @@
                     </div>
                     <div class="row charts">
                         <div class="col-xs-6">
-                            <h5>Market Share</h5>
-                            <div class="market-share-chart"></div>
+                            <h5>Profit vs. Market Share vs. Revenue</h5>
+                            <div class="correlation-chart"></div>
                         </div>
                         <div class="col-xs-6">
                             <h5>Round by Round Profit</h5>
@@ -90,6 +91,7 @@
         <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.4.13/d3.min.js" charset="utf-8"></script>
         <script src="//forio.com/tools/contour/0.9.107/contour.min.js"></script>
         <script src="//forio.com/tools/js-libs/1.1.2/epicenter.min.js"></script>
+        <script src="js/vendor/pie-legends.min.js"></script>
         <script src="js/vendor/commetd.min.js"></script>
         <script src="js/app.js?v=%TIMESTAMP%"></script>
     </body>
