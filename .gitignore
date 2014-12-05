@@ -58,7 +58,7 @@ node_modules/
 bower_components/
 /src/static/css/vendor/
 /src/static/js/vendor/*
-!/src/static/js/vendor/forio/
+!/src/static/js/vendor/*.min.js
 /src/static/fonts/
 
 # Sublime specific #
