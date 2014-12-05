@@ -18,7 +18,7 @@
         <!--[if lt IE 7]>
             <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
         <![endif]-->
-
+        <div class="network-error">Network Error. Try refreshing your browser.</div>
         <header>
             <div class="container">
                   <div class="pull-right login-info">
@@ -30,7 +30,7 @@
             </div>
         </header>
 
-        <div class="container">
+        <div id="main-content" class="container" style="display: none;">
             <div class="row">
                 <div class="col-xs-12">
                     <button id="advance" style="display:none;" class="btn btn-success pull-right">Advance</button>
@@ -41,14 +41,13 @@
             </div>
             <div class="row">
                 <div class="col-xs-9">
-
                     <div class="row">
                         <div class="col-xs-6 market-share"></div>
                         <div class="col-xs-6 prices"></div>
                     </div>
                     <div class="row charts">
                         <div class="col-xs-6">
-                            <h5>Price vs. Market Share</h5>
+                            <h5>Profit vs. Market Share vs. Revenue</h5>
                             <div class="correlation-chart"></div>
                         </div>
                         <div class="col-xs-6">
@@ -56,12 +55,33 @@
                             <div class="profit-chart"></div>
                         </div>
                     </div>
+                    <div class="row charts">
+                        <div class="col-xs-6">
+                            <h5>Market Share</h5>
+                            <div class="market-share-chart"></div>
+                        </div>
+                        <div class="col-xs-6">
+                            <h5>Round by Round Profit</h5>
+                            <div class="round-profit-chart"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="col-xs-3 chat-container">
-
                 </div>
             </div>
 
+        </div>
+
+        <div class="footer" style="display: none;">
+            <div class="container">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="pull-right">
+                            Developed by <a href="http://forio.com"><img src="img/logo.svg" alt=""></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>

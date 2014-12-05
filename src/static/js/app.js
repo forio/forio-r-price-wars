@@ -9,6 +9,47 @@ var Notifications = require('services/notifications-service');
 var moneyFormatter = d3.format('$,.0f');
 var perFormatter = d3.format('%');
 
+var duration = 800;
+var categories = _.range(5).map(function (a) { return a + 2015; });
+var profitChartOptions = {
+    el: '.profit-chart',
+    chart: {
+        // animations: false,
+        animations: {
+            duration: duration
+        },
+        padding: {
+            left: 45
+        }
+    },
+
+    xAxis: {
+        title: 'Year',
+        min: 0,
+        max: 4,
+        labels: {
+            formatter: function (d) {
+                return categories[d];
+            }
+        }
+    },
+
+    yAxis: {
+        title: 'Profit',
+        labels: {
+            formatter: function (v) {
+                return v < 100 && v > 100 ? d3.format('d')(v) : d3.format('$.2s')(v);
+            }
+        }
+    },
+
+    legend: {
+        vAlign: 'top',
+        hAlign: 'right',
+        direction: 'horizontal'
+    }
+};
+
 
 function App() {
     this.runManager = runManager;
@@ -32,6 +73,9 @@ App.prototype = {
                 _this.model = new GameModel({ run: _this.runManager.run, player: 'p' + _this.currentUser.role });
                 _this.model.loadData()
                     .then(_this.render);
+            })
+            .fail(function () {
+                $('.network-error').show();
             });
 
         }
@@ -122,6 +166,9 @@ App.prototype = {
     },
 
     updateState: function () {
+
+        $('#main-content, .footer').show();
+
         if (this.model.get('current_round')[0] <= this.model.get('total_rounds')[0]) {
             $('#advance, #inputs').show();
             $('#end-of-game').hide();
@@ -146,8 +193,10 @@ App.prototype = {
     },
 
     renderCharts: function () {
-        this.renderProfitChart();
+        this.renderCumulativeProfitChart();
+        this.renderRoundProfitChart();
         this.renderCorrelationChart();
+        this.renderMarketShareChart();
     },
 
     renderPrices: function () {
@@ -189,58 +238,20 @@ App.prototype = {
         table.append(tr);
     },
 
-    renderProfitChart: function () {
-        var categories = _.range(5).map(function (a) { return a + 2015; });
-        this.profitChart = this.profitChart || new Contour({
+    renderCumulativeProfitChart: function () {
+        this.profitChart = this.profitChart || new Contour(_.extend({}, profitChartOptions, {
             el: '.profit-chart',
-            chart: {
-                // animations: false,
-
-                padding: {
-                    left: 45
-                }
+            column: {
+                groupPadding: 3
             },
-
-            xAxis: {
-                title: 'Year',
-                min: 0,
-                max: 4,
-                labels: {
-                    formatter: function (d) {
-                        return categories[d];
-                    }
-                }
-            },
-
-            yAxis: {
-                title: 'Profit',
-                labels: {
-                    formatter: function (v) {
-                        return v < 100 && v > 100 ? d3.format('d')(v) : d3.format('$.2s')(v);
-                    }
-                }
-            },
-
-            line: {
-                marker: {
-                    size: 5
-                }
-            },
-
             tooltip: {
                 formatter: function (d) {
                     return '<h5>' + moneyFormatter(d.y) + '</h5>Cumulative Profit ' + d.series + ' - ' + categories[d.x];
                 }
-            },
-
-            legend: {
-                vAlign: 'top',
-                hAlign: 'right',
-                direction: 'horizontal'
             }
-        })
+        }))
         .cartesian()
-        .line()
+        .column()
         .legend()
         .tooltip();
 
@@ -261,27 +272,69 @@ App.prototype = {
         }
     },
 
+    renderRoundProfitChart: function (chart, selector, dataSelector) {
+        this.roundProfitChart = this.roundProfitChart || new Contour(_.merge({}, profitChartOptions, {
+            el: '.round-profit-chart',
+            line: {
+                marker: {
+                    size: 5
+                }
+            },
+            xAxis: {
+                type: 'linear'
+            },
+            tooltip: {
+                formatter: function (d) {
+                    return '<h5>' + moneyFormatter(d.y) + '</h5>Round Profit ' + d.series + ' - ' + categories[d.x];
+                }
+            }
+        }))
+        .cartesian()
+        .line()
+        .legend()
+        .tooltip();
+
+        var curRound = this.model.get('current_round')[0];
+        var cleanSeries = function (v, i) { return i < curRound - 1 ? v : null; };
+        if (curRound > 1) {
+            var series = [{
+                name: 'Player 1',
+                data: this.model.get('p1_profit')[0].map(cleanSeries)
+            }, {
+                name: 'Player 2',
+                data: this.model.get('p2_profit')[0].map(cleanSeries)
+            }];
+
+            this.roundProfitChart.setData(series).render();
+        } else {
+            this.roundProfitChart.setData([{ name: 'Player 1', data: [] }, { name: 'Player 2', data: [] }]).render();
+        }
+    },
+
     renderCorrelationChart: function () {
         var prodId = 0;
+        var scale = d3.scale.pow().range([3, 15]);
 
         this.correlationChart = this.correlationChart || new Contour({
             el: '.correlation-chart',
             chart: {
                 padding: {
-                    // left: 45
+                    right: 35
+                },
+                animations: {
+                    duration: duration
                 }
             },
 
-            xAxis: {
-                title: 'Price',
+            yAxis: {
+                title: 'Profit',
                 ticks: 5,
-                // min: 0,
                 labels: {
                     format: '$.2s'
                 }
             },
 
-            yAxis: {
+            xAxis: {
                 min: 0,
                 max: 1,
                 labels: {
@@ -298,7 +351,14 @@ App.prototype = {
 
             tooltip: {
                 formatter: function (d) {
-                    return '<h5>' + perFormatter(d.y) + ' market share at ' + moneyFormatter(d.x) + '</h5>';
+                    return '<h5>Revenue: ' + moneyFormatter(d.rev) + '</h5><h5>Profit: ' + moneyFormatter(d.y) + '</h5><h5>Market Share: ' + perFormatter(d.x) + '</h5>';
+                }
+            },
+
+            scatter: {
+                radius: function (d, i) {
+                    scale.domain(d3.extent(revenue));
+                    return scale(revenue[i]);
                 }
             }
 
@@ -309,12 +369,14 @@ App.prototype = {
 
         var _this = this;
         var curRound = this.model.get('current_round')[0];
+        var revenue = this.model.getForCurPlayer('revenue')[0];
         if (curRound > 1) {
-            var prices = _this.model.getForCurPlayer('prices')[0];
+            var prices = _this.model.getForCurPlayer('profit')[0];
             var data = this.model.getForCurPlayer('share')[prodId].slice(0, curRound - 1).map(function (share, round) {
                 return {
-                    x: prices[round],
-                    y: share
+                    y: prices[round],
+                    x: share,
+                    rev: revenue[round]
                 };
             });
             var series = [{
@@ -325,6 +387,38 @@ App.prototype = {
         } else {
             this.correlationChart.setData([]).render();
         }
+    },
+
+    renderMarketShareChart: function () {
+        this.marketShareChart = this.marketShareChart || new Contour({
+            el: '.market-share-chart',
+            chart: {
+                animations: {
+                    duration: duration
+                }
+            },
+            tooltip: {
+                formatter: function (d) {
+                    return '<h5>Market share: ' + perFormatter(d.data.y) + '</h5>Player ' + (d.data.x + 1) + '';
+                }
+            }
+        })
+        .pie()
+        .tooltip();
+
+        var curRound = this.model.get('current_round')[0] - 1;
+        if (curRound >= 1) {
+            var p1 = this.model.get('p1_share')[0][curRound - 1];
+            var p2 = this.model.get('p2_share')[0][curRound - 1];
+            var series = [{
+                name: 'Market Share',
+                data: [p1, p2]
+            }];
+            this.marketShareChart.setData(series).render();
+        } else {
+            this.marketShareChart.setData([]).render();
+        }
+
     }
 };
 

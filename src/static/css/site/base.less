@@ -1,5 +1,57 @@
+html {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.network-error {
+    display: none;
+    opacity: 0.7;
+    width: 350px;
+    background-color: #F00;
+    text-align: center;
+    color: #FFF;
+    margin: 0 auto;
+    margin-top: 0px;
+    margin-right: auto;
+    margin-bottom: 0px;
+    margin-left: -75px;
+    line-height: 1.7em;
+    border-bottom-right-radius: 4px;
+    border-bottom-left-radius: 4px;
+    position: absolute;
+    left: 50%;
+    margin-left: -175px;
+}
+
 .container {
     min-width: 768px !important;
+}
+
+#main-content {
+    margin-bottom: 80px;
+    height: 100%;
+}
+
+#main-content:after {
+    content: '';
+    display: block;
+
+}
+
+.footer {
+    opacity: .6;
+    position: relative;
+    bottom: 0;
+    background-color: #fff;
+    border-top: solid 1px #eee;
+    margin: 32px 0 0;
+    padding: 1em 0 12px 0;
+
+    img {
+        height: 1.7em;
+        margin-bottom: 11px;
+    }
 }
 
 .price {
@@ -55,6 +107,11 @@
 }
 
 .charts {
+
+    svg {
+        overflow: visible;
+    }
+
     >h5 {
         color: #555;
         font-weight: normal;
@@ -81,6 +138,42 @@
     .markers .dot {
         stroke: #fff;
         stroke-width: 2px;
+    }
+
+    .Player {
+        &.s-2 {
+            background-color: #EE2E2F;
+
+            rect {
+                fill: #EE2E2F;
+                stroke: #EE2E2F;
+            }
+
+            path {
+                stroke: #EE2E2F;
+            }
+
+            .dot {
+                fill: #EE2E2F;
+            }
+        }
+    }
+
+    path.arc {
+        stroke: #fff;
+        stroke-width: 2;
+        &.s-2 {
+            fill: #EE2E2F;
+        }
+    }
+
+    .correlation-chart {
+        .dot {
+            fill: #008C48;
+            fill-opacity: 0.7;
+            stroke: #008C48;
+            stroke-width: 1.5;
+        }
     }
 }
 
@@ -121,23 +214,5 @@
         width: 100%;
         margin-bottom: 5px;
     }
-
-    // #chat-message + button {
-    //     display: none;
-    // }
-
-    // #chat-message:focus {
-    //     height: 3em;
-    // }
-
-    // #chat-message:focus + button {
-    //     display: inline-block;
-    // }
-
-    // #chat-message + button.visible {
-    //     display: inline-block;
-    // }
-
-
 }
 
