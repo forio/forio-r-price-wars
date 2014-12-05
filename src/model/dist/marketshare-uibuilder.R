@@ -40,7 +40,7 @@ initialize <- function() {
     # Decision variable, stores the price decision for the current round
     # Can be a single number, as here, or a vector like "c(90, 350, 900)"
     p1.current.prices <<- 80
-    p2.current.prices <<- 80
+    p2.current.prices <<- NULL
     
     # Each model is fit with a logistic regression.
     # Determines how much market share goes to each player.
@@ -141,7 +141,7 @@ advanceRound <- function() {
     current.round <<- current.round + 1
     
     p1.current.prices <<- 80
-    p2.current.prices <<- 80
+    p2.current.prices <<- NULL
     
     if (active.players == 1 && current.round < total.rounds + 1) {
         adjustP2Prices(differences)
