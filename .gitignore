@@ -78,3 +78,5 @@ build/
 public/
 web/
 src/static/js/templates.js
+
+*.Rhistory

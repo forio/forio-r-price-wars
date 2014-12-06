@@ -120,6 +120,12 @@ advanceRound <- function() {
         if (is.null(p2.current.prices) && current.round == 1) {
             p2.prices[,current.round] <<- default.prices
         }
+        else if (!is.null(p2.current.prices) && current.round == 1) {
+            p2.prices[,current.round] <<- p2.current.prices
+        }
+        else if (!is.null(p2.current.prices)) {
+            p2.prices[,current.round] <<- p2.current.prices
+        }
     }
     else {
         if (is.null(p2.current.prices)) {
