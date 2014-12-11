@@ -28,7 +28,8 @@ var onLoginFailed = function () {
 };
 
 
-$('#login').on('click', function () {
+$('#login').on('click', function (e) {
+    e.preventDefault();
     var userName = $('#username').val();
     var pass = $('#password').val();
     $('#login').attr('disabled', 'disabled').addClass('disabled');
