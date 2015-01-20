@@ -169,7 +169,7 @@ App.prototype = {
 
         $('#main-content, .footer').show();
 
-        if (this.model.get('current_round')[0] <= this.model.get('total_rounds')[0]) {
+        if (this.model.get('current_round') <= this.model.get('total_rounds')) {
             $('#advance, #inputs').show();
             $('#end-of-game').hide();
         } else {
@@ -223,7 +223,7 @@ App.prototype = {
 
     renderDataRow: function (table, player, data, cellClass) {
         var tr = $('<tr>');
-        var curRound = this.model.get('current_round')[0];
+        var curRound = this.model.get('current_round');
         tr.append($('<td>').addClass('center').text(player));
 
         for (var j = 0; j<curRound - 1; j++) {
@@ -255,7 +255,7 @@ App.prototype = {
         .legend()
         .tooltip();
 
-        var curRound = this.model.get('current_round')[0];
+        var curRound = this.model.get('current_round');
         var cleanSeries = function (v, i) { return i < curRound - 1 ? v : null; };
         if (curRound > 1) {
             var series = [{
@@ -294,7 +294,7 @@ App.prototype = {
         .legend()
         .tooltip();
 
-        var curRound = this.model.get('current_round')[0];
+        var curRound = this.model.get('current_round');
         var cleanSeries = function (v, i) { return i < curRound - 1 ? v : null; };
         if (curRound > 1) {
             var series = [{
@@ -369,7 +369,7 @@ App.prototype = {
         .scatter()
         .tooltip();
 
-        var curRound = this.model.get('current_round')[0];
+        var curRound = this.model.get('current_round');
         if (curRound > 1) {
             var prices = _this.model.getForCurPlayer('profit')[0];
             var data = this.model.getForCurPlayer('share')[prodId].slice(0, curRound - 1).map(function (share, round) {
@@ -407,7 +407,7 @@ App.prototype = {
         .pieLegend()
         .tooltip();
 
-        var curRound = this.model.get('current_round')[0] - 1;
+        var curRound = this.model.get('current_round') - 1;
         if (curRound >= 1) {
             var p1 = this.model.get('p1_share')[0][curRound - 1];
             var p2 = this.model.get('p2_share')[0][curRound - 1];

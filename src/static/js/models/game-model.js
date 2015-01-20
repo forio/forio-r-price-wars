@@ -50,11 +50,11 @@ GameModel.prototype = {
 
     isPriceSubmitted: function () {
         var curPrices = this.getForCurPlayer('current_prices');
-        return _.isArray(curPrices);
+        return !isNaN(curPrices);
     },
 
     isReadyToStep: function () {
-        return this.get('p1_current_prices')[0] && this.get('p2_current_prices')[0];
+        return !isNaN(this.get('p1_current_prices')) && !isNaN(this.get('p2_current_prices'));
     },
 
     loadData: function () {
