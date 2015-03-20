@@ -33,6 +33,10 @@ module.exports = {
         delete options.success;
 
         var onSuccess = function (data) {
+            $.ajaxSetup({
+                headers: { 'Authorization': 'Bearer ' + data['access_token'] }
+            });
+
             var jwt = JSON.parse(new Buffer(data['access_token'].split('.')[1], 'base64').toString('ascii'));
 
             var userId = jwt['user_id'];
@@ -60,10 +64,6 @@ module.exports = {
                     };
 
                     net.createCookie(endpoints.sessionCookieName, cookieObj);
-
-                    $.ajaxSetup({
-                        headers: { 'Authorization': 'Bearer ' + data['access_token'] }
-                    });
 
                     var userObject = {
                         userName: userName,
